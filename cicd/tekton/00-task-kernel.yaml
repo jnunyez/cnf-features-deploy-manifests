@@ -1,0 +1,34 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: patch-kernel
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "openshift kernel-hack"
+spec:
+  workspaces:
+    - name: kubeconfig-dir
+      optional: true
+      description: >-
+        The workspace which contains the the kubeconfig file if in case we want to run the oc command on another cluster.
+  description: >-
+    This task runs commands against the cluster provided by user
+    and if not provided then where the Task is being executed.
+
+  params:
+  steps:
+    - name: kernel
+      image: quay.io/openshift/origin-cli:4.10
+      script: |
+        #!/usr/bin/env bash
+        [[ "$(workspaces.kubeconfig-dir.bound)" == "true" ]] && \
+        [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]] && \
+        export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig && \
+        cd $(workspaces.kubeconfig-dir.path)
+        oc project testharness-kernel
+
+        RPMS_NODE_ROLE="node-role.kubernetes.io/ran-cu-ldc1-dell00" REMOVE_PACKAGES="kernel kernel-core kernel-modules kernel-modules-extra" RPMS_SRC="http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-core-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-devel-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-modules-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-modules-extra-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm" ./hack/custom_rpms.sh make custom-rpms       
