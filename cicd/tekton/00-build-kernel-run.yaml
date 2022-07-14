@@ -8,6 +8,13 @@ metadata:
 spec:
   pipelineRef: 
     name: build-kernel
+  params:
+    - name: RPMS_NODE_ROLE
+      value: "node-role.kubernetes.io/ran-cu-ldc1-dell00"
+    - name: REMOVE_PACKAGES
+      value: ""
+    - name: RPMS_SRC
+      value: "http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/kernel-4.18.0-394.el8.x86_64.rpm http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/kernel-core-4.18.0-394.el8.x86_64.rpm http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/kernel-modules-4.18.0-394.el8.x86_64.rpm http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/kernel-modules-extra-4.18.0-394.el8.x86_64.rpm" 
   serviceAccountName: pipeline
   workspaces:
     - name: build-kernel

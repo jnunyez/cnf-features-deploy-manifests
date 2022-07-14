@@ -20,15 +20,25 @@ spec:
     and if not provided then where the Task is being executed.
 
   params:
+    - name: rpms_node_role
+      type: string
+    - name: remove_packages
+      type: string
+      default: ""
+    - name: rpms_src
+      type: string
   steps:
     - name: kernel
-      image: quay.io/openshift/origin-cli:4.10
+      image: quay.io/jnunez/oc-cli:latest
       script: |
         #!/usr/bin/env bash
         [[ "$(workspaces.kubeconfig-dir.bound)" == "true" ]] && \
         [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]] && \
         export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig && \
         cd $(workspaces.kubeconfig-dir.path)
-        oc project testharness-kernel
 
-        RPMS_NODE_ROLE="node-role.kubernetes.io/ran-cu-ldc1-dell00" REMOVE_PACKAGES="kernel kernel-core kernel-modules kernel-modules-extra" RPMS_SRC="http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-core-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-devel-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-modules-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm http://mirror.centos.org/centos/8-stream/RT/x86_64/os/Packages/kernel-rt-modules-extra-4.18.0-348.2.1.rt7.132.el8_5.x86_64.rpm" ./hack/custom_rpms.sh make custom-rpms       
+        oc project testharness-kernel
+        RPMS_NODE_ROLE='$(params.rpms_node_role)' \
+        REMOVE_PACKAGES='$(params.remove_packages)' \
+        RPMS_SRC='$(params.rpms_src)' \
+        ./hack/custom_rpms.sh make custom-rpms       

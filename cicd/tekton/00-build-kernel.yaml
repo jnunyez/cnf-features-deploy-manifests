@@ -19,7 +19,7 @@ spec:
     default: "node-role.kubernetes.io/ran-cu-ldc1-dell00"
   - name: REMOVE_PACKAGES
     type: string
-    description: remove packages
+    description: list of packages to remove
     default: "kernel kernel-core kernel-modules kernel-modules-extra"
   - name: RPMS_SRC
     type: string
@@ -78,6 +78,13 @@ spec:
         value: "4.10"  
   - name: kernel-deploy
     runAfter: [setup-namespace]
+    params:
+    - name: rpms_node_role
+      value: $(params.RPMS_NODE_ROLE)
+    - name: remove_packages
+      value: $(params.REMOVE_PACKAGES)
+    - name: rpms_src
+      value: $(params.RPMS_SRC)
     taskRef:
       kind: Task 
       name: patch-kernel

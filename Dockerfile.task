@@ -1,0 +1,10 @@
+FROM quay.io/fedora/fedora:34-x86_64
+
+RUN dnf -y install jq
+RUN export latest_oc_client_version=$(curl https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/ 2>/dev/null | grep -o \"openshift-client-linux-4.*tar.gz\" | tr -d \") && \
+    curl -JL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/${latest_oc_client_version} -o oc.tar.gz && \
+    tar -xzvf oc.tar.gz && \
+    mv oc /usr/local/bin/oc && \
+    ln -s /usr/local/bin/oc /usr/local/bin/kubectl && \
+    rm -f oc.tar.gz
+ENTRYPOINT [ "/bin/bash" ]
