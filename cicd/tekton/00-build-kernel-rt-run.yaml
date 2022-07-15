@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    tekton.dev/pipeline: build-kernel
+  name: build-kernel-rt-run
+  namespace: cnf-gotests-pipeline
+spec:
+  pipelineRef: 
+    name: build-kernel
+  serviceAccountName: pipeline
+  workspaces:
+    - name: build-kernel
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
