@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: run-send-to-gchat
+spec:
+  params:
+  - name: token
+    value: QjLrTKvtNWmxFlkce7kVXJu6pzzlLtACBo8I4xem-AU%3D
+  - name: key
+    value: AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI
+  - name: message
+    value: "Taskrun: Hello from Tekton!"
+  taskRef:
+    name: send-to-channel-gchat

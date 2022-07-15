@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: send-to-channel-gchat
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Messaging
+    tekton.dev/tags: messaging
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    These tasks post a simple message to a google chat space.
+
+    This task uses google chat REST api to send the message.
+    
+
+  params:
+  - name: key
+    type: string
+    description: the username goes here
+  - name: token
+    type: string
+    description: the password goes here
+  - name: message
+    type: string
+    description: plain text message goes here
+  steps:
+  - name: post
+    image: docker.io/curlimages/curl:7.70.0@sha256:031df77a11e5edded840bc761a845eab6e3c2edee22669fb8ad6d59484b6a1c4 #tag: 7.70.0
+    script: |
+      #!/bin/sh
+      /usr/bin/curl -X POST \
+                    -H 'Content-Type: application/json' \
+                    'https://chat.googleapis.com/v1/spaces/AAAAiCQuo38/messages?key=$(params.key)&token=$(params.token)' \
+                    -d '{"text": "$(params.message)"}'
